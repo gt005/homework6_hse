@@ -1,0 +1,20 @@
+#include <stdio.h>
+#include <getopt.h>
+#include <string.h>
+#include <math.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+float f1(float x);
+
+int main(int argc, char **argv) {
+
+    float a = -124.1245;
+
+    float b = f1(a);
+    printf("___\t%f\t___\n", b);
+
+    return 0;
+}
+
+// ./homework6 --test-root 3:2:3.0:4.5:0.5:4.224744871391589

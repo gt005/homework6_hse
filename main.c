@@ -62,7 +62,7 @@ double root(afunc *f,
 
     // Выбрали за начальное приближение правый конец (точку (b, F(b)))
     is_start_approximation_right_or_not = !((((*f)(a) - (*g)(a)) < 0) ^
-            (((*f)((a + b) / 2) - (*g)((a + b) / 2)) < ((((*f)(a) - (*g)(a)) + ((*f)(b) - (*g)(b))) / 2)));
+                                            (((*f)((a + b) / 2) - (*g)((a + b) / 2)) < ((((*f)(a) - (*g)(a)) + ((*f)(b) - (*g)(b))) / 2)));
     /*
             Знаки выражений << или >> означают одинаковые знаки для первой и второй производной
             различные знаки означают различные знаки производных
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
         switch (rez)
         {
             case 'h':  // --help
-                printf("%s", possible_options); break;
+                printf("%s", possible_options); return 0;
             case 'r':  // --root
                 printf("found argument \"r\".\n"); break;
             case 'i':  // --iterations
@@ -170,11 +170,11 @@ int main(int argc, char **argv) {
     }
 
     double result_1_2 = root(&f1, &f2, 3, 8,
-         0.0001, &f1_derivative, &f2_derivative);  // ans: 6.09616967415785
+                             0.0001, &f1_derivative, &f2_derivative);  // ans: 6.09616967415785
     double result_1_3 = root(&f1, &f3, 2.01, 2.5,
-         0.0001, &f1_derivative, &f3_derivative);  // ans: 2.19174342502218
+                             0.0001, &f1_derivative, &f3_derivative);  // ans: 2.19174342502218
     double result_2_3 = root(&f2, &f3, 4.0, 4.5,
-         0.0001, &f2_derivative, &f3_derivative);  // ans: 4.22474487139159
+                             0.0001, &f2_derivative, &f3_derivative);  // ans: 4.22474487139159
 
     printf("f1 f2:\t%lf\nf1 f3:\t%lf\nf2 f3:\t%lf\n", result_1_2, result_1_3, result_2_3);
 
