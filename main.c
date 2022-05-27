@@ -83,7 +83,31 @@ double root(afunc *f,
 }
 
 
-double integral(afunc *f, double a, double b, double eps2);
+double integral(afunc *f, double a, double b, double eps2)
+{
+    double p_runge = 1.0 / 3;
+    long n = 1;
+    double h = (b - a) / n;
+
+    double calculated_integral;
+    double new_calculated_integral = (*f)(a + 0.5 * h) * h;
+
+    do
+    {
+        n *= 2;
+        calculated_integral = new_calculated_integral;
+        new_calculated_integral = 0;
+        h = (b - a) / n;
+        for (int i = 0; i < n; ++i)
+        {
+            new_calculated_integral += (*f)(a + (i + 0.5) * h);
+        }
+        new_calculated_integral *= h;
+    }
+    while ((p_runge * fabs(calculated_integral - new_calculated_integral)) >= eps2);
+
+    return new_calculated_integral;
+}
 
 
 char possible_options[] = "--help и -h, которые выводят на печать все допустимые ключи командной строки.\n\n"
@@ -108,7 +132,7 @@ int main(int argc, char **argv) {
 
     while ( (rez = getopt_long(argc, argv, "hriR:I:", long_opt, NULL)) != -1)
     {
-        char *tmp_start_param;
+        char *tmp_param_from_run_option;  // Временно записываютсь считываемые аргументы опций если есть
 
         switch (rez)
         {
@@ -121,62 +145,80 @@ int main(int argc, char **argv) {
                 should_find_iterations_amount = true;
                 break;
             case 'R':  // --test-root
-                tmp_start_param = strtok(optarg, parameter_delimiter);
-                double (*first_func)(double);
-                double (*second_func)(double);
-                double (*first_func_derivative)(double);
-                double (*second_func_derivative)(double);
+                tmp_param_from_run_option = strtok(optarg, parameter_delimiter);
+                double (*first_func_test_root)(double);
+                double (*second_func_test_root)(double);
+                double (*first_func_derivative_test_root)(double);
+                double (*second_func_derivative_test_root)(double);
 
-                switch (tmp_start_param[0]) {
-                    case '1': first_func = &f1; first_func_derivative = &f1_derivative; break;
-                    case '2': first_func = &f2; first_func_derivative = &f2_derivative; break;
-                    case '3': first_func = &f3; first_func_derivative = &f3_derivative; break;
+                switch (tmp_param_from_run_option[0]) {
+                    case '1': first_func_test_root = &f1; first_func_derivative_test_root = &f1_derivative; break;
+                    case '2': first_func_test_root = &f2; first_func_derivative_test_root = &f2_derivative; break;
+                    case '3': first_func_test_root = &f3; first_func_derivative_test_root = &f3_derivative; break;
                 }
 
-                tmp_start_param = strtok(NULL, parameter_delimiter);
-                switch (tmp_start_param[0]) {
-                    case '1': second_func = &f1; second_func_derivative = &f1_derivative; break;
-                    case '2': second_func = &f2; second_func_derivative = &f2_derivative; break;
-                    case '3': second_func = &f3; second_func_derivative = &f3_derivative; break;
+                tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
+                switch (tmp_param_from_run_option[0]) {
+                    case '1': second_func_test_root = &f1; second_func_derivative_test_root = &f1_derivative; break;
+                    case '2': second_func_test_root = &f2; second_func_derivative_test_root = &f2_derivative; break;
+                    case '3': second_func_test_root = &f3; second_func_derivative_test_root = &f3_derivative; break;
                 }
 
-                tmp_start_param = strtok(NULL, parameter_delimiter);
-                double a_to_test = strtod(tmp_start_param, (char **)NULL);
-                tmp_start_param = strtok(NULL, parameter_delimiter);
-                double b_to_test = strtod(tmp_start_param, (char **)NULL);
-                tmp_start_param = strtok(NULL, parameter_delimiter);
-                double eps1_to_test = strtod(tmp_start_param, (char **)NULL);
-                tmp_start_param = strtok(NULL, parameter_delimiter);
-                double right_answer_to_test = strtod(tmp_start_param, (char **)NULL);
+                tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
+                double a_to_test_test_root = strtod(tmp_param_from_run_option, (char **)NULL);
+                tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
+                double b_to_test_test_root = strtod(tmp_param_from_run_option, (char **)NULL);
+                tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
+                double eps1_to_test_test_root = strtod(tmp_param_from_run_option, (char **)NULL);
+                tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
+                double right_answer_to_test_test_root = strtod(tmp_param_from_run_option, (char **)NULL);
 
-                double result_of_test = root(first_func, second_func, a_to_test, b_to_test,
-                                             eps1_to_test, first_func_derivative, second_func_derivative);
+                double result_of_test_test_root = root(first_func_test_root, second_func_test_root, a_to_test_test_root, b_to_test_test_root,
+                                             eps1_to_test_test_root, first_func_derivative_test_root, second_func_derivative_test_root);
 
-                printf("%lf %lf %lf\n", result_of_test, result_of_test - right_answer_to_test,
-                       result_of_test / right_answer_to_test - 1);
+                printf("%lf %lf %lf\n", result_of_test_test_root, result_of_test_test_root - right_answer_to_test_test_root,
+                       result_of_test_test_root / right_answer_to_test_test_root - 1);
                 return 0;
             case 'I':  // --test-integral
-                printf("found argument \"I\", parameters:\n");
-                tmp_start_param = strtok(optarg, parameter_delimiter);
-                while (tmp_start_param != NULL)
-                {
-                    printf("\t%s\n", tmp_start_param);
-                    tmp_start_param = strtok(NULL, parameter_delimiter);
+                tmp_param_from_run_option = strtok(optarg, parameter_delimiter);
+                double (*first_func_test_integral)(double);
+
+                switch (tmp_param_from_run_option[0]) {
+                    case '1': first_func_test_integral = &f1; break;
+                    case '2': first_func_test_integral = &f2; break;
+                    case '3': first_func_test_integral = &f3; break;
                 }
-                break;
+
+                tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
+                double a_to_test_test_integral = strtod(tmp_param_from_run_option, (char **)NULL);
+                tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
+                double b_to_test_test_integral = strtod(tmp_param_from_run_option, (char **)NULL);
+                tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
+                double eps1_to_test_test_integral = strtod(tmp_param_from_run_option, (char **)NULL);
+                tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
+                double right_answer_to_test_test_integral = strtod(tmp_param_from_run_option, (char **)NULL);
+
+                double result_of_test_test_integral = integral(first_func_test_integral, a_to_test_test_integral,
+                                                               b_to_test_test_integral, eps1_to_test_test_integral);
+
+                printf("%lf %lf %lf\n", result_of_test_test_integral, result_of_test_test_integral - right_answer_to_test_test_integral,
+                       result_of_test_test_integral / right_answer_to_test_test_integral - 1);
+                return 0;
             case '?': printf("Error found !\n"); break;
             default: break;
         }
     }
 
-    double result_1_2 = root(&f1, &f2, 3, 8,
-                             0.0001, &f1_derivative, &f2_derivative);  // ans: 6.09616967415785
-    double result_1_3 = root(&f1, &f3, 2.01, 2.5,
-                             0.0001, &f1_derivative, &f3_derivative);  // ans: 2.19174342502218
-    double result_2_3 = root(&f2, &f3, 4.0, 4.5,
-                             0.0001, &f2_derivative, &f3_derivative);  // ans: 4.22474487139159
+//    double result_1_2 = root(&f1, &f2, 3, 8,
+//                             0.0001, &f1_derivative, &f2_derivative);  // ans: 6.09616967415785
+//    double result_1_3 = root(&f1, &f3, 2.01, 2.5,
+//                             0.0001, &f1_derivative, &f3_derivative);  // ans: 2.19174342502218
+//    double result_2_3 = root(&f2, &f3, 4.0, 4.5,
+//                             0.0001, &f2_derivative, &f3_derivative);  // ans: 4.22474487139159
+//
+//    printf("f1 f2:\t%lf\nf1 f3:\t%lf\nf2 f3:\t%lf\n", result_1_2, result_1_3, result_2_3);
 
-    printf("f1 f2:\t%lf\nf1 f3:\t%lf\nf2 f3:\t%lf\n", result_1_2, result_1_3, result_2_3);
+    printf("\n%lf\n", integral(&f1, 2, 6, 0.00001));
 
     if (should_find_iterations_amount)
         printf("Количество итераций при подсчете трех корней: %u\n", iterations_amount);
@@ -184,4 +226,5 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-// ./homework6 --test-root 3:2:3.0:4.5:0.5:4.224744871391589
+//  --test-root 3:2:3.0:4.5:0.001:4.224744871391589
+//  --test-integral 1:2:6:0.00001:5.36426245424844
