@@ -1,30 +1,42 @@
-%include "io.inc"
-
-section .bss
-    tmp_value resd 1
-    
-section .rodata
-    msg db "%f", 10,  0
-
-extern printf
 section .text
 global f1
+global f2
+global f3
+global f1_derivative
+global f2_derivative
+global f3_derivative
 f1:  ; double f1(double x)
-    push ebp
-    mov ebp, esp
+    FINIT
+    FLD qword[esp+4]
+    FSIN
+    ret
     
-    mov eax, dword[esp + 4]
+f2:
+    FINIT
+    FLD qword[esp+4]
+    FSIN
+    ret
     
-    mov eax, 672391
+f3:
+    FINIT
+    FLD qword[esp+4]
+    FSIN
+    ret
     
-    ;and esp, ~15
-    ;sub esp, 16
+f1_derivative:
+    FINIT
+    FLD qword[esp+4]
+    FSIN
+    ret
     
+f2_derivative:
+    FINIT
+    FLD qword[esp+4]
+    FSIN
+    ret
     
-    ;mov dword[esp + 4], 1
-    ;mov dword[esp], msg
-    ;call printf
-    
-    mov esp, ebp
-    pop ebp
+f3_derivative:
+    FINIT
+    FLD qword[esp+4]
+    FSIN
     ret

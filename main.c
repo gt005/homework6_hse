@@ -13,40 +13,17 @@ const char parameter_delimiter[2] = ":";  // Разделяющий значен
 unsigned iterations_amount;  // Счетчик для подсчета итераций при нахождении корней
 bool should_find_iterations_amount = false;  // флаг, который устанавливается если нужно посчитать количество итераций при поиске корней
 
-double f1(double x)
-{
-    return log(x);
-}
+double f1(double x);
 
+double f2(double x);
 
-double f2(double x)
-{
-    return -2 * x + 14;
-}
+double f3(double x);
 
+double f1_derivative(double x);
 
-double f3(double x)
-{
-    return 1 / (2 - x) + 6;
-}
+double f2_derivative(double x);
 
-
-double f1_derivative(double x)
-{
-    return 1 / x;
-}
-
-
-double f2_derivative(double x)
-{
-    return -2;
-}
-
-
-double f3_derivative(double x)
-{
-    return 1 / (x*x - 4*x + 4);
-}
+double f3_derivative(double x);
 
 
 double root(afunc *f,
@@ -60,9 +37,8 @@ double root(afunc *f,
     double x_current_point;
     bool is_start_approximation_right_or_not;
 
-    // Выбрали за начальное приближение правый конец (точку (b, F(b)))
-    is_start_approximation_right_or_not = !((((*f)(a) - (*g)(a)) < 0) ^
-                                            (((*f)((a + b) / 2) - (*g)((a + b) / 2)) < ((((*f)(a) - (*g)(a)) + ((*f)(b) - (*g)(b))) / 2)));
+    // Выбрали за начальное приближение правый конец (точку (b, F(b))). То есть знаки производных равны
+    is_start_approximation_right_or_not = !((((*f)(a) - (*g)(a)) < 0) ^ (((*f)((a + b) / 2) - (*g)((a + b) / 2)) < ((((*f)(a) - (*g)(a)) + ((*f)(b) - (*g)(b))) / 2)));
     /*
             Знаки выражений << или >> означают одинаковые знаки для первой и второй производной
             различные знаки означают различные знаки производных
@@ -137,7 +113,7 @@ int main(int argc, char **argv) {
         switch (rez)
         {
             case 'h':  // --help
-                printf("%s", possible_options); return 0;
+                printf("%s", possible_options); break;
             case 'r':  // --root
                 printf("found argument \"r\".\n"); break;
             case 'i':  // --iterations
@@ -155,6 +131,7 @@ int main(int argc, char **argv) {
                     case '1': first_func_test_root = &f1; first_func_derivative_test_root = &f1_derivative; break;
                     case '2': first_func_test_root = &f2; first_func_derivative_test_root = &f2_derivative; break;
                     case '3': first_func_test_root = &f3; first_func_derivative_test_root = &f3_derivative; break;
+                    default: first_func_test_root = &f1; first_func_derivative_test_root = &f1_derivative;
                 }
 
                 tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
@@ -162,6 +139,7 @@ int main(int argc, char **argv) {
                     case '1': second_func_test_root = &f1; second_func_derivative_test_root = &f1_derivative; break;
                     case '2': second_func_test_root = &f2; second_func_derivative_test_root = &f2_derivative; break;
                     case '3': second_func_test_root = &f3; second_func_derivative_test_root = &f3_derivative; break;
+                    default: second_func_test_root = &f1; second_func_derivative_test_root = &f1_derivative;
                 }
 
                 tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
@@ -178,7 +156,7 @@ int main(int argc, char **argv) {
 
                 printf("%lf %lf %lf\n", result_of_test_test_root, result_of_test_test_root - right_answer_to_test_test_root,
                        result_of_test_test_root / right_answer_to_test_test_root - 1);
-                return 0;
+                break;
             case 'I':  // --test-integral
                 tmp_param_from_run_option = strtok(optarg, parameter_delimiter);
                 double (*first_func_test_integral)(double);
@@ -187,6 +165,7 @@ int main(int argc, char **argv) {
                     case '1': first_func_test_integral = &f1; break;
                     case '2': first_func_test_integral = &f2; break;
                     case '3': first_func_test_integral = &f3; break;
+                    default: first_func_test_integral = &f1;
                 }
 
                 tmp_param_from_run_option = strtok(NULL, parameter_delimiter);
@@ -203,7 +182,7 @@ int main(int argc, char **argv) {
 
                 printf("%lf %lf %lf\n", result_of_test_test_integral, result_of_test_test_integral - right_answer_to_test_test_integral,
                        result_of_test_test_integral / right_answer_to_test_test_integral - 1);
-                return 0;
+                break;
             case '?': printf("Error found !\n"); break;
             default: break;
         }
@@ -218,7 +197,8 @@ int main(int argc, char **argv) {
 //
 //    printf("f1 f2:\t%lf\nf1 f3:\t%lf\nf2 f3:\t%lf\n", result_1_2, result_1_3, result_2_3);
 
-    printf("\n%lf\n", integral(&f1, 2, 6, 0.00001));
+//    printf("\n%lf\n", integral(&f1, 2, 6, 0.00001));
+
 
     if (should_find_iterations_amount)
         printf("Количество итераций при подсчете трех корней: %u\n", iterations_amount);
