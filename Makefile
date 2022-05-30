@@ -5,13 +5,28 @@ ASMFLAGS+=-g -f elf32
 
 all: homework6_hse
 
-homework6_hse: test.o root_functions.o
+homework6_hse: main.o f1.o f2.o f3.o f1_derivative.o f2_derivative.o f3_derivative.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-test.o: test.c
+main.o: main.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
-root_functions.o: root_functions.asm
+f1.o: f1.asm
+	$(AS) $(ASMFLAGS) $^ -o $@
+
+f2.o: f2.asm
+	$(AS) $(ASMFLAGS) $^ -o $@
+
+f3.o: f3.asm
+	$(AS) $(ASMFLAGS) $^ -o $@
+
+f1_derivative.o: f1_derivative.asm
+	$(AS) $(ASMFLAGS) $^ -o $@
+
+f2_derivative.o: f2_derivative.asm
+	$(AS) $(ASMFLAGS) $^ -o $@
+
+f3_derivative.o: f3_derivative.asm
 	$(AS) $(ASMFLAGS) $^ -o $@
 
 clean:
