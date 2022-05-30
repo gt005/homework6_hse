@@ -12,6 +12,7 @@ typedef double afunc(double);
 const char parameter_delimiter[2] = ":";  // Разделяющий значения входных параметров символ
 unsigned iterations_amount;  // Счетчик для подсчета итераций при нахождении корней
 bool should_find_iterations_amount = false;  // флаг, который устанавливается если нужно посчитать количество итераций при поиске корней
+bool should_print_roots = false;  // флаг, который устанавливается если нужно печатать абсциссы точек пересечения
 
 
 double f1(double x);
@@ -111,7 +112,8 @@ int main(int argc, char **argv) {
             case 'h':  // --help
                 printf("%s", possible_options); return 0;
             case 'r':  // --root
-                printf("found argument \"r\".\n"); break;
+                should_print_roots = true;
+                break;
             case 'i':  // --iterations
                 iterations_amount = 0;
                 should_find_iterations_amount = true;
@@ -191,16 +193,27 @@ int main(int argc, char **argv) {
     double result_2_3 = root(&f2, &f3, 4.0, 4.5,
                              0.0001, &f2_derivative, &f3_derivative);  // ans: 4.22474487139159
 
-    printf("f1 f2:\t%lf\nf1 f3:\t%lf\nf2 f3:\t%lf\n", result_1_2, result_1_3, result_2_3);
+    double res = integral(&f3, result_1_3, result_2_3, 0.0001) +
+                 integral(&f2, result_2_3, result_1_2, 0.0001) -
+                 integral(&f1, result_1_3, result_1_2, 0.0001);
 
-//    printf("\n%lf\n", integral(&f1, 2, 6, 0.00001));
-
-
+    if (should_print_roots)
+    {
+        printf("Абсциссы точек пересечения функций:\nf1 f2:\t%lf\nf1 f3:\t%lf\nf2 f3:\t%lf\n", result_1_2, result_1_3, result_2_3);
+    }
     if (should_find_iterations_amount)
-        printf("Количество итераций при подсчете трех корней: %u\n", iterations_amount);
+    {
+        printf("Суммарное количество итераций при подсчете трех корней: %u\n", iterations_amount);
+    }
+
+    printf("Площадь фигуры: %lf\n", res);
+
+
+
+
 
     return 0;
 }
 
-//  --test-root 3:2:3.0:4.5:0.001:4.224744871391589
+//  --test-root 3:2:3.0:4.5:0.001:4.224744871391589 --test-root 1:2:3.0:8.5:0.001:6.09616967415785
 //  --test-integral 1:2:6:0.00001:5.36426245424844
