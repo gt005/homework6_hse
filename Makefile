@@ -5,10 +5,10 @@ ASMFLAGS+=-g -f elf32
 
 all: homework6_hse
 
-homework6_hse: main.o root_functions.o
+homework6_hse: test.o root_functions.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-main.o: main.c
+test.o: test.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 root_functions.o: root_functions.asm
