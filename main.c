@@ -206,11 +206,10 @@ int main(int argc, char **argv) {
         printf("Суммарное количество итераций при подсчете трех корней: %u\n", iterations_amount);
     }
 
-    printf("Площадь фигуры: %lf\n", res);
-
-
-
-
+    if (argc == 1)
+    {
+        printf("Площадь фигуры: %lf\n", res);
+    }
 
     return 0;
 }

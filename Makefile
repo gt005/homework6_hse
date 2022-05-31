@@ -31,3 +31,7 @@ f3_derivative.o: f3_derivative.asm
 
 clean:
 	rm -rf *.o homework6_hse
+
+test: homework6_hse
+	./homework6_hse --test-root 1:2:3.0:8.5:0.001:6.09616967415785
+	./homework6_hse --test-integral 1:2:6:0.00001:5.36426245424844
