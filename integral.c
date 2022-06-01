@@ -4,7 +4,8 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
-
+#define CALCULATED_EPS_1 0.00001
+#define CALCULATED_EPS_2 0.0001
 
 typedef double afunc(double);
 
@@ -21,6 +22,16 @@ double f3(double x);
 double f1_derivative(double x);
 double f2_derivative(double x);
 double f3_derivative(double x);
+
+
+double root(afunc *f,
+            afunc *g,
+            double a,
+            double b,
+            double eps1,
+            afunc *f_derivative,
+            afunc *g_derivative);
+double integral(afunc *f, double a, double b, double eps2);
 
 
 double root(afunc *f,
@@ -115,7 +126,6 @@ int main(int argc, char **argv) {
                 should_print_roots = true;
                 break;
             case 'i':  // --iterations
-                iterations_amount = 0;
                 should_find_iterations_amount = true;
                 break;
             case 'R':  // --test-root
@@ -186,33 +196,33 @@ int main(int argc, char **argv) {
         }
     }
 
+
+    iterations_amount = 0;
     double result_1_2 = root(&f1, &f2, 3, 8,
-                             0.0001, &f1_derivative, &f2_derivative);  // ans: 6.09616967415785
+                             CALCULATED_EPS_1, &f1_derivative, &f2_derivative);  // ans: 6.09616967415785
     double result_1_3 = root(&f1, &f3, 2.01, 2.5,
-                             0.0001, &f1_derivative, &f3_derivative);  // ans: 2.19174342502218
+                             CALCULATED_EPS_1, &f1_derivative, &f3_derivative);  // ans: 2.19174342502218
     double result_2_3 = root(&f2, &f3, 4.0, 4.5,
-                             0.0001, &f2_derivative, &f3_derivative);  // ans: 4.22474487139159
+                             CALCULATED_EPS_1, &f2_derivative, &f3_derivative);  // ans: 4.224744871391
 
-    double res = integral(&f3, result_1_3, result_2_3, 0.0001) +
-                 integral(&f2, result_2_3, result_1_2, 0.0001) -
-                 integral(&f1, result_1_3, result_1_2, 0.0001);
 
-    if (should_print_roots)
+    double res = integral(&f3, result_1_3, result_2_3, CALCULATED_EPS_2) +
+                 integral(&f2, result_2_3, result_1_2, CALCULATED_EPS_2) -
+                 integral(&f1, result_1_3, result_1_2, CALCULATED_EPS_2);
+
+    if (should_print_roots)  // Если была опция --root
     {
         printf("Абсциссы точек пересечения функций:\nf1 f2:\t%lf\nf1 f3:\t%lf\nf2 f3:\t%lf\n", result_1_2, result_1_3, result_2_3);
     }
-    if (should_find_iterations_amount)
+    if (should_find_iterations_amount)  // Если была опция --iterations
     {
         printf("Суммарное количество итераций при подсчете трех корней: %u\n", iterations_amount);
     }
 
-    if (argc == 1)
+    if (argc == 1)  // Если не было найдено опций
     {
         printf("Площадь фигуры: %lf\n", res);
     }
 
     return 0;
 }
-
-//  --test-root 3:2:3.0:4.5:0.001:4.224744871391589 --test-root 1:2:3.0:8.5:0.001:6.09616967415785
-//  --test-integral 1:2:6:0.00001:5.36426245424844

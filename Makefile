@@ -1,14 +1,23 @@
-CC=gcc
-CFLAGS+=-m32 -Wall -g -O2 -W
 AS=nasm
 ASMFLAGS+=-g -f elf32
+CFLAGS ?= -O2 -g
+CFLAGS += -std=gnu99
+CFLAGS += -Wall -Werror -Wformat-security -Wignored-qualifiers -Winit-self \
+	-Wswitch-default -Wpointer-arith -Wtype-limits -Wempty-body \
+	-Wstrict-prototypes -Wold-style-declaration -Wold-style-definition \
+	-Wmissing-parameter-type -Wmissing-field-initializers -Wnested-externs \
+	-Wstack-usage=4096 -Wmissing-prototypes -Wfloat-equal -Wabsolute-value
+CFLAGS += -fsanitize=undefined -fsanitize-undefined-trap-on-error
+CC += -m32 -no-pie -fno-pie
 
-all: homework6_hse
+.PHONY: all
 
-homework6_hse: main.o f1.o f2.o f3.o f1_derivative.o f2_derivative.o f3_derivative.o
+all: integral
+
+integral: integral.o f1.o f2.o f3.o f1_derivative.o f2_derivative.o f3_derivative.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-main.o: main.c
+integral.o: integral.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 f1.o: f1.asm
@@ -30,8 +39,14 @@ f3_derivative.o: f3_derivative.asm
 	$(AS) $(ASMFLAGS) $^ -o $@
 
 clean:
-	rm -rf *.o homework6_hse
+	rm -rf *.o integral
 
-test: homework6_hse
-	./homework6_hse --test-root 1:2:3.0:8.5:0.001:6.09616967415785
-	./homework6_hse --test-integral 1:2:6:0.00001:5.36426245424844
+test: integral
+	echo "\nФункция root:\n"
+	./integral --test-root 1:2:3.0:8.5:0.001:6.09616967415785
+	./integral --test-root 1:3:2.01:2.5:0.001:2.19174342502218
+	./integral --test-root 2:3:4.0:4.5:0.001:4.224744871391
+	echo "\nФункция integral:\n"
+	./integral --test-integral 1:2.19174342502218:6.09616967415785:0.00001:5.39552
+	./integral --test-integral 2:4.224744871391:6.09616967415785:0.00001:6.885131770958632
+	./integral --test-integral 3:2.19174342502218:4.224744871391:0.00001:9.74677
